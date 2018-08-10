@@ -1,35 +1,3 @@
-cat("\014")
-getwd()
-setwd("G:/My Drive/Thesis/BGs") # FINLAB/Personal PC
-setwd("D:/Thesis/BGs") # LAB4 PC
-
-# PACKAGES
-
-pkgs = c("data.tabler", "tidyverse", "zoo") # package names
-install.packages(pkgs)
-
-inst = lapply(pkgs, library, character.only = TRUE) # load them
-
-# install.packages("data.table")
-# install.packages("dplyr")
-# install.packages("zoo")
-
-library(data.table)
-library(dplyr)
-library(zoo)
-
-# rm(list = ls(pattern = "^tmp"))
-# rm(list = ls())
-# IPO  <-  read.csv(file = "Input/Fund IPO 1.csv", header = TRUE)
-
-
-#INPUTTING OWNERSHIP DATA----------------------------------------------------------------------------------------------------------------------------------
-
-
-OWD <- read.table("Input/Ownership data/23128_1_7_20180403_010717_dat.txt", header = TRUE, sep = "|",quote="\"")
-ISIND <- read.table("Input/Ownership data/23128_1_5_20180403_010717_dat.txt", header = TRUE, sep = "|",quote="\"")
-
-colnames(OWD) <- c("co_code","company_name","date","report","owner_code", "owner_name")
 
 OWD <- merge(OWD, ISIND, by = c("co_code","company_name"), all = TRUE)
 setnames(OWD, "isin_code_equity", "isin")

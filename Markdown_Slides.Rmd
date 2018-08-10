@@ -2,9 +2,10 @@
 title: "Introduction to R"
 author: Bobbur Abhilash Chowdary
 date: August 2018
-output: pdf_document
+output: 
+  pdf_document:
   # beamer_presentation:
-  # keep_tex: true
+  keep_tex: true
   # toc: true
   
     
@@ -107,36 +108,63 @@ install.packages("data.table")
 library(data.table)
 ```
 
+mtcars dataset details
+[, 1] mpg  Miles/(US) gallon  
+[, 2] cyl  Number of cylinders   
+[, 3] disp Displacement (cu.in.)   
+[, 4] hp   Gross horsepower  
+[, 5] drat Rear axle ratio  
+[, 6] wt   Weight (1000 lbs)  
+[, 7] qsec 1/4 mile time  
+[, 8] vs   Engine (0 = V-shaped, 1 = straight)  
+[, 9] am   Transmission (0 = automatic, 1 = manual)   
+[,10] gear Number of forward gears  
+[,11] carb Number of carburetors  
+
 
 * head and tail functions provide the first and last 'n' lines of a given dataset. Here we use a popular and default dataset already stored in R - mtcars
 
 ```{r var, eval =TRUE}
 var1 <- head(mtcars,10) 
-var2 <- tail(mtcars,10)
+var2 <- tail(ggplot2::mpg,10)
+View(var1) # capital V in View
+```
+
+```{r cars, eval=TRUE}
+summary(mtcars)
+str(mtcars)
+```
+
+* finding Column names, renaming column names and changing one column name
+```{r}
+colnames(var1)
+colnames(var1) <- c("mpg", "cyl",  "disp", "hp", "drat", "wt", "qsec", "vs", "am", "gear1", "carb")
+setnames(var1, "gear1", "gear")
 ```
 
 
-* Removing one variable or all variables from 'Environment'
+* Removing one data set or all data sets from 'Environment'
 ```{r}
 rm(var1)
 rm(list = ls())
 ```
 
-* Reading files
 
-data  <-  read.csv(file = "Input/data.csv", header = TRUE)
-data <- read.table("Input/data.txt", header = TRUE, sep = "|",quote="\"")
-
-
-## Slide with R Output
-
-```{r cars, eval=TRUE}
-summary(cars)
+* Reading and writing files
+```{r}
+var0 <- mtcars
+write.csv(var0, file = "Output/data.csv")
+write.table(var0, file = "Output/data1.txt", sep = "|")
+data  <-  read.csv(file = "Output/data.csv", row.names = 1)
+data1 <- read.table("Output/data1.txt", header = TRUE, sep = "|")
+data2 <- read.csv(file = "Output/data.csv")
+download.file("https://www.nseindia.com/content/historical/EQUITIES/2018/JUL/cm30JUL2018bhav.csv.zip", "NSE BhavCopy/cm30JUL2018bhav.csv.zip")
 ```
 
 ## Slide with Plot
 
-```{r pressure}
-plot(pressure)
+```{r}
+
 ```
+
 
