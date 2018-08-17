@@ -3,9 +3,10 @@ title: "Introduction to R"
 author: Bobbur Abhilash Chowdary
 date: August 2018
 output: 
-  pdf_document:
+  beamer_presentation
+  # pdf_document:
   # beamer_presentation:
-  keep_tex: true
+  # keep_tex: true
   # toc: true
   
     
@@ -37,14 +38,12 @@ knitr::opts_chunk$set(eval = FALSE, echo = TRUE)
 * Don't change the order of installation. First R and then R-Studio. Otherwise sometime it can create problems.
 
 * Try this in console of R-Studio to check if its working
-
 ```{r test, eval=TRUE}
 1+2
 ```
 
 
-
-## Optional - Git
+## Optional - Git -1
 
 Have you ever been frustated seeing files named Final_Version, New_Final_Version ....? Have you ever wondered what is the difference between Version_1 and Version_2?
 
@@ -58,7 +57,7 @@ Rstudio does most of the basic stuff a Git clients does. Did I forget to say RSt
 
 Also create GitHub account so you can store your code online. For private repositories if you register with IIM Cal id its free.
 
----
+## Optional - Git -2
 
 Step 1 - Open Git Bash app and type the following commands
 
@@ -66,13 +65,16 @@ git config --global user.name 'abcd efgh'
 git config --global user.email 'abcdexy@email.iimcal.ac.in'  
 git config --global --list
 
-Step 2 - GO to GitHub.com and create a new repository. Choose default options. Open your repository to find readme.md file. Press "clone or download" button on top right corner and copy the url. 
+Step 2 - Go to GitHub.com and create a new repository. Choose default options. Open your repository to find readme.md file. Press "clone or download" button on top right corner and copy the url. 
 
-Step 3 - Open Rstudio >File >New Project >Version Control >Git . Paste the above url and chose the folder you want to install the project.
+## Optional - Git -3
 
-Step 4 - Open the readme.md file. Make some changes and save it. In your Git window in Rstudio (beside environment and history) select Readme.md and press commit. Type a commit message in new window and then press commit. Then press push to send the commit to GitHub.  
+Step 3 - Open Rstudio >File >New Project >Version Control >Git . Paste the above url and choose the folder you want to install the project in. A new folder with repository name will be created.
+
+Step 4 - Open the readme.md file. Make some changes and save it. In your Git pane in Rstudio (beside Environment pane) select Readme.md and press commit. Type a commit message in new window and then press commit. Then press push (arrow up) to send the commit to GitHub.  
 
 Open GitHub.com to find the changes reflected in Readme.md file there.
+
 
 ## RStudio Basics
 
@@ -85,6 +87,8 @@ The 'Console' pane is where you will find the result of executing the code you h
 'Environment' pane is where you will find the datasets you have loaded into the memory.
 
 'Files' pane contains the list of files in the current working directory
+
+
 
 ## Intro to R
 
@@ -103,12 +107,40 @@ setwd("G:/My Drive/Thesis/BGs")
 
 * Installing Packages and Loading Packages. Need to install a library only once per computer but have to load it everytime you restart. 
 
-```{r}
+```{r echo = TRUE}
 install.packages("data.table")
+install.packages("tidyverse")
 library(data.table)
+library(tidyverse)
+```
+```{r include=FALSE, eval = TRUE}
+library(data.table)
+library(tidyverse)
 ```
 
-mtcars dataset details
+## Variable names
+
+- R is case sensitive. 'Data' is not same as 'data'.
+
+- Names can have '.' (dot), '_', letters and numbers. 
+
+- A good coding convention is to always start with a letter.
+
+- Press 'ALT + SHIFT + K' for list of Keyboard shortcuts
+
+- whenever you find '+' in the console that implies R is waiting for you to complete your command
+```{r}
+1 + 
+```
+
+- Always use '<-' for assigning. '=' also works but sometimes it won't.
+
+
+##mtcars data set
+
+mtcars is a default data set in R. We will use this extensively.
+
+mtcars dataset details  
 [, 1] mpg  Miles/(US) gallon  
 [, 2] cyl  Number of cylinders   
 [, 3] disp Displacement (cu.in.)   
@@ -121,50 +153,158 @@ mtcars dataset details
 [,10] gear Number of forward gears  
 [,11] carb Number of carburetors  
 
+##checking out the data set
 
-* head and tail functions provide the first and last 'n' lines of a given dataset. Here we use a popular and default dataset already stored in R - mtcars
-
-```{r var, eval =TRUE}
+* head and tail functions provide the first and last 'n' lines of a given dataset respectively . Summary function summarises and str gives an idea of structure of data set.
+```{r var}
 var1 <- head(mtcars,10) 
 var2 <- tail(ggplot2::mpg,10)
 View(var1) # capital V in View
-```
-
-```{r cars, eval=TRUE}
 summary(mtcars)
 str(mtcars)
 ```
+Common types of variables.  
+int - integer  
+dbl - real number  
+chr - character vector  
+date - date  
+fctr - factor  
+lgl - logical  
 
+
+## Column names
 * finding Column names, renaming column names and changing one column name
 ```{r}
 colnames(var1)
-colnames(var1) <- c("mpg", "cyl",  "disp", "hp", "drat", "wt", "qsec", "vs", "am", "gear1", "carb")
+colnames(var1) <- c("mpg", "cyl", "disp", "hp", "drat", 
+                "wt", "qsec", "vs", "am", "gear1", "carb")
 setnames(var1, "gear1", "gear")
 ```
 
+## Removing data sets from memory
 
-* Removing one data set or all data sets from 'Environment'
+* Removing a specific data set 
 ```{r}
-rm(var1)
+rm(var1, var2)
+```
+
+* Removing all data sets
+```{r}
 rm(list = ls())
 ```
 
 
-* Reading and writing files
+## Reading and writing files
 ```{r}
 var0 <- mtcars
 write.csv(var0, file = "Output/data.csv")
 write.table(var0, file = "Output/data1.txt", sep = "|")
-data  <-  read.csv(file = "Output/data.csv", row.names = 1)
-data1 <- read.table("Output/data1.txt", header = TRUE, sep = "|")
+data <- read.csv(file = "Output/data.csv", row.names = 1)
+data1 <- read.table("Output/data1.txt", 
+                    header = TRUE, sep = "|")
 data2 <- read.csv(file = "Output/data.csv")
-download.file("https://www.nseindia.com/content/historical/EQUITIES/2018/JUL/cm30JUL2018bhav.csv.zip", "NSE BhavCopy/cm30JUL2018bhav.csv.zip")
+download.file("https://www.nseindia.com/content/
+  historical/EQUITIES/2018/JUL/cm30JUL2018bhav.csv.zip",
+  "NSE BhavCopy/cm30JUL2018bhav.csv.zip")
 ```
+
+## basic data operations
+
+most of the operation in data cleaning falls into these categories
+
+filter - selecting observations/rows  
+arrange - ordering the observations  
+select - selecting columns  
+mutate - creating new variables from existing ones  
+summarize - summary  
+
+The above five are functions in 'dplyr' package. 'dplyr' and a couple of other packages together are called 'tidyverse' which we already loaded.
+
+##dplyr functions
+
+Use '==' when its a test/question. Use '=' for assigning/informing. We use '==' below because we want to ask "if gear = 4 then select" which is a test.
+
+```{r}
+mtcars1 <- filter(mtcars, gear == 4, cyl == 6)
+mtcars2 <- filter(mtcars, gear == 4 & cyl == 6) # =mtcars1
+mtcars3 <- filter(mtcars, gear == 4 | cyl == 6) #OR operator
+mtcars4 <- filter(mtcars, gear == 4 | gear == 6)
+mtcars5 <- filter(mtcars, gear %in% c(4,6)) # =mtcars4
+```
+All 'dplyr operations dont affect the original dataset. mtcars still has 32 observations.  
+Try 'mtcars' on the left side of the above equation.
+
+## Arrange
+Common operators recognized in R - ">, <, >=, <=, != (not equal) and == "
+
+Missing values in R are called 'NA'. The only way to do conditional tests is "is.na". For example is.na(gear) in above case.
+
+Similar to filter(), first input to arrange() is dataset name followed by column names for sorting. use desc() for descing order.
+```{r}
+arrange(mtcars, mpg, desc(cyl))
+```
+
+##selecting variables
+
+Selecting columns uses select() function which is similar to arrange() and filter() functions
+
+```{r}
+select(mtcars, mpg, cyl)
+select(mtcars, -mpg)
+select(mtcars, vs, everything()) #rearranging
+```
+
+##creating variables
+
+Similarly use 'mutate' for creating new variables
+
+```{r}
+mutate(mtcars, mpg_per_hp = mpg/hp, mpg_per_wt = mpg/wt, 
+       mpg_per_wt1 = mpg_per_hp*hp/wt)
+transmutate(mtcars, mpg_per_hp = mpg/hp, mpg_per_wt = mpg/wt, 
+       mpg_per_wt1 = mpg_per_hp*hp/wt)
+
+```
+
+You can use the following operators in mutate - '+, -, /, *, ^,  
+%% (reminder 5%%2 =1), %/% (5 %/%2 = 2), sum(), cumsum(), prod() 
+
+
+##summarize
+
+```{r}
+by_gear <- group_by(mtcars, gear, carb)
+summarise(by_gear, mean_milage = mean(mpg))
+```
+
+Pipes are very useful to write good looking code. The most used Pipe is %>%. Pipes also reduce the need to save intermediaries.
+
+x %>% f(y) is equvalent to f(x,y)
+
+In above example can be rewritten as
+
+```{r}
+mtcars %>% group_by(gear, carb) %>% 
+  summarise(mean_milage = mean(mpg))
+```
+```{r}
+ungroup(mtcars)
+```
+
+
+
 
 ## Slide with Plot
 
-```{r}
-
+```{r, eval= TRUE, cache= TRUE}
+ggplot(mtcars ) + geom_point(aes(x= disp, y = mpg))
 ```
+
+---
+
+```{r, eval= TRUE,  cache= TRUE}
+ggplot(mtcars, aes(x= disp, y = mpg) ) + geom_point( aes(size = hp, color = gear)) + geom_smooth()
+```
+
 
 
