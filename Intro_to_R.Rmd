@@ -4,10 +4,10 @@ author:
   - Bobbur Abhilash Chowdary
   - IIM Calcutta
 date: August 2018
-output: 
-  beamer_presentation:
-    keep_tex: true
-    theme: CambridgeUS
+output: pdf_document 
+  # beamer_presentation:
+  #   keep_tex: true
+    # theme: CambridgeUS
 ---
 
 ```{r setup, include=FALSE}
@@ -100,12 +100,15 @@ setwd("G:/My Drive/Thesis/BGs")
 ```{r echo = TRUE}
 install.packages("data.table")
 install.packages("tidyverse")
+install.packages("nycflights13")
+library(nycflights13)
 library(data.table)
 library(tidyverse)
 ```
 ```{r include=FALSE, eval = TRUE}
 library(data.table)
 library(tidyverse)
+library(nycflights13)
 ```
 
 ## Variable names
@@ -129,7 +132,7 @@ x =NA; y=NA; x==y
 x <- c(1,2,3,4,5,6,NA); x>3; x<4
 ```
 
-##mtcars data set
+## mtcars data set
 
 mtcars is a default data set in R. We will use this extensively.
 
@@ -146,7 +149,7 @@ mtcars dataset details
 [,10] gear Number of forward gears  
 [,11] carb Number of carburetors  
 
-##Checking out the data set
+## Checking out the data set
 
 head() and tail() functions provide the first and last 'n' lines of a given dataset respectively . summary() function summarises and str() gives an idea of structure of data set.
 ```{r var}
@@ -207,6 +210,23 @@ download.file("https://www.nseindia.com/content/historical/EQUITIES/2018/JUL/cm3
 For better import funtions refer 'readr' package. Use 'readxl' package for reading Excel data sheets. 
 Use 'haven' & 'foreign' packages for reading SAS, STATA and SPSS files.
 
+## aggregate functions in base R
+
+```{r, eval= TRUE}
+x = 1:100
+
+min(x)
+max(x)
+mean(x)
+sum(x)
+sd(x)
+median(x)
+IQR(x)
+
+```
+
+
+
 ## Basic data operations
 
 Most operations in data cleaning process fall into these categories
@@ -263,12 +283,20 @@ You can use the following operators in mutate - '+, -, /, *, ^,
 sum(), cumsum(), prod() 
 
 
-## dplyr - summarize() and Pipes
+## dplyr - summarize()
+
+summarize can use all aggregate function in base R and the following
+
+n(): the number of observations in the current group
+n_distinct(x):the number of unique values in x.
+first(x), last(x) and nth(x, n) - these work similarly to x[1], x[length(x)], and x[n] but give you more control over the result if the value is missing.
 
 ```{r}
 by_gear <- group_by(mtcars, gear, carb)
 summarise(by_gear, mean_milage = mean(mpg))
 ```
+
+## Pipes
 
 Pipes are very useful to write good looking code. The most used Pipe is %>%. Pipes also reduce the need to save intermediaries.
 
@@ -281,26 +309,124 @@ mtcars %>% group_by(gear, carb) %>%
 ungroup(mtcars)
 ```
 
+## dplyr - joins() introduction
+
+By default it uses common variables. here by= "carrier" is default but we will specify it. airlines data has "name" of carrier
+
+```{r, eval= TRUE}
+
+flights2 <- flights %>% select(year, hour, origin, dest, tailnum, carrier)
+flights2 %>% left_join(planes[,c("tailnum","manufacturer","model")], by = "tailnum") 
+        %>% head(5) %>% knitr::kable()
+```
+
+If the by variables are not named same in both the data sets
+
+```{r, eval= TRUE}
+flights2 %>% left_join(airports[,c("faa","name","lat")], c("dest" = "faa"))  
+          %>% head(5) %>% knitr::kable()
+```
+
+
+
+## dplyr - left_join()
+```{r, eval= TRUE}
+df1 <- data_frame(x = c(1, 2), y = 2:1)
+df2 <- data_frame(x = c(1, 3), a = 10, b = "a")
+```
+  
+left join includes observations of 'x' dataset irrespective of there is amatching column in 'Y' dataset
+```{r, eval= TRUE}
+df1 %>% left_join(df2)  %>% knitr::kable()
+```
+
+## dplyr - right_join()
+
+right join - is same as left_join(y,x). but here columns of y are still after x in right_join(x,y)
+```{r, eval= TRUE}
+df1 %>% right_join(df2)  %>% knitr::kable()
+```
+
+## dplyr - inner_join()
+
+inner join includes observation common to both datasets
+```{r, eval= TRUE}
+df1 %>% inner_join(df2) %>% knitr::kable()
+```
+
+## dplyr - full_join()
+full_join inlcudes all rows of x and y
+```{r, eval= TRUE}
+df1 %>% full_join(df2)  %>% knitr::kable()
+```
+
+## dplyr - join problems
+beware of cartesian products arising out of your dataset
+```{r, eval= TRUE}
+df1 <- data_frame(x = c(1, 1, 2), y = 1:3)
+df2 <- data_frame(x = c(1, 1, 2), z = c("a", "b", "a"))
+df1 %>% left_join(df2)  %>% knitr::kable()
+```
+
+## dplyr - semi_join and anti_join
+
+If you’re worried about what observations your joins(left, right, inner, and full joins) will match, start with a semi_join() or anti_join(). semi_join() and anti_join() never duplicate they only ever remove observations.
+
+semi_join(x, y) keeps all observations in x that have a match in y.
+anti_join(x, y) drops all observations in x that have a match in y.
+
+```{r, eval= TRUE}
+df1 <- data_frame(x = c(1, 1, 3, 4), y = 1:4)
+df2 <- data_frame(x = c(1, 1, 2), z = c("a", "b", "a"))
+df1 %>% nrow()
+df1 %>% inner_join(df2, by = "x") %>% nrow()
+df1 %>% semi_join(df2, by = "x") %>% knitr::kable()
+```
+
+
+## dplyr - set operations
+
+```{r, eval= TRUE}
+df1 <- data_frame(x = 1:2, y = c(1L, 1L))
+df2 <- data_frame(x = 1:2, y = 1:2)
+```
+
+like in sets we have four operations - Union, intersection, A-B, B-A
+
+```{r, eval= TRUE}
+intersect(df1, df2) %>% knitr::kable()
+union(df1, df2) %>% knitr::kable()
+setdiff(df1, df2) %>% knitr::kable()
+setdiff(df2, df1) %>% knitr::kable()
+```
+
+## dplyr- rename
+
+
+```{r, eval=TRUE}
+rename(df2,  newnameofy = y) %>% knitr::kable()
+```
+
 
 ## ggplot
 
-```{r, eval= TRUE, fig.height= 5 }
+```{r, eval= TRUE, fig.height= 4 }
 ggplot(mtcars ) + geom_point(aes(x= disp, y = mpg))
 ```
 
 ---
-```{r, eval= TRUE, message = FALSE, fig.align= 'center', fig.height = 5.5 }
+```{r, eval= TRUE, message = FALSE, fig.align= 'center', fig.height = 4 }
 ggplot(mtcars, aes(x= disp, y = mpg))+geom_point(aes(
   size = hp,color = gear)) + geom_smooth()
 ```
 
 ---
-```{r, eval= TRUE,  fig.align= 'center' , fig.height = 5.5}
+```{r, eval= TRUE,  fig.align= 'center' , fig.height = 4}
 ggplot(mtcars)+ geom_bar(mapping = aes(x = gear))
 ```
 
 ---
-```{r, eval= TRUE,  fig.align= 'center', fig.height = 5.5}
+```{r, eval= TRUE,  fig.align= 'center', fig.height = 3.7}
 ggplot(mtcars)+ geom_histogram(mapping=aes(x=hp),bins=15)
 ```
 
